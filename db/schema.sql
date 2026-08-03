@@ -87,6 +87,14 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- ---------- IS_ADMIN() — usado pela moderação (apagar anúncios de terceiros) ----------
+create or replace function public.is_admin()
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
+$$;
+
 -- =====================================================================
 --  ROW LEVEL SECURITY
 -- =====================================================================
@@ -118,8 +126,8 @@ drop policy if exists "listings delete"      on public.listings;
 create policy "listings public read" on public.listings for select using (status = 'active');
 create policy "listings owner read"  on public.listings for select using (auth.uid() = owner);
 create policy "listings insert"      on public.listings for insert with check (auth.uid() = owner);
-create policy "listings update"      on public.listings for update using (auth.uid() = owner);
-create policy "listings delete"      on public.listings for delete using (auth.uid() = owner);
+create policy "listings update"      on public.listings for update using (auth.uid() = owner or public.is_admin());
+create policy "listings delete"      on public.listings for delete using (auth.uid() = owner or public.is_admin());
 
 -- =====================================================================
 --  STORAGE (fotos dos anúncios) — bucket público "listings"

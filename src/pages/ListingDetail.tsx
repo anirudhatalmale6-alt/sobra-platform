@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import type { Listing } from "../lib/types";
-import { fetchListing } from "../lib/api";
+import { fetchListing, fetchListings, deleteListing } from "../lib/api";
 import { categoryById, subcategoryById } from "../lib/categories";
 import { euro, discountPct, timeAgo, daysLeft } from "../lib/format";
+import { useAuth } from "../context/AuthContext";
 import CategoryIcon from "../components/CategoryIcon";
+import ProductCard from "../components/ProductCard";
 
 const fmtDate = (d: string) => {
   try {
@@ -16,18 +18,41 @@ const fmtDate = (d: string) => {
 
 export default function ListingDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { profile } = useAuth();
   const [listing, setListing] = useState<Listing | null>(null);
+  const [sellerListings, setSellerListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    setActive(0);
+    setSellerListings([]);
     fetchListing(id)
-      .then(setListing)
+      .then((l) => {
+        setListing(l);
+        if (l) {
+          fetchListings({ owner: l.owner })
+            .then((others) => setSellerListings(others.filter((o) => o.id !== l.id)))
+            .catch(() => {});
+        }
+      })
       .catch(() => setListing(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handleAdminDelete() {
+    if (!listing) return;
+    if (!confirm("Apagar este anúncio? Esta ação é de moderação e não pode ser desfeita.")) return;
+    try {
+      await deleteListing(listing.id);
+      navigate("/produtos");
+    } catch {
+      alert("Não foi possível apagar o anúncio.");
+    }
+  }
 
   if (loading) return <div className="spinner" />;
   if (!listing)
@@ -151,9 +176,32 @@ export default function ListingDetail() {
                 <p className="hint">Este vendedor ainda não indicou o contacto/morada da loja.</p>
               )}
             </div>
+
+            {profile?.is_admin && (
+              <button
+                className="btn btn-danger btn-block"
+                style={{ marginTop: 14 }}
+                onClick={handleAdminDelete}
+              >
+                Apagar anúncio (moderação)
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {sellerListings.length > 0 && (
+        <div style={{ marginTop: 40 }}>
+          <h2 style={{ fontSize: "1.15rem", marginBottom: 14 }}>
+            Mais anúncios de {seller}
+          </h2>
+          <div className="grid">
+            {sellerListings.map((l) => (
+              <ProductCard key={l.id} listing={l} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
