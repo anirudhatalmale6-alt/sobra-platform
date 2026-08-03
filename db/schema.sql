@@ -60,6 +60,7 @@ create index if not exists listings_created_idx  on public.listings(created_at d
 
 -- ---------- COLUNAS ADICIONAIS (migração, seguras de correr várias vezes) ----------
 alter table public.profiles add column if not exists address       text;
+alter table public.profiles add column if not exists account_type  text not null default 'empresa';  -- 'empresa' | 'particular'
 alter table public.listings add column if not exists expiry_date   date;  -- validade próxima
 alter table public.listings add column if not exists promo_ends_at date;  -- fim da promoção
 
@@ -70,8 +71,12 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, company_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'company_name', ''))
+  insert into public.profiles (id, company_name, account_type)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'company_name', ''),
+    coalesce(new.raw_user_meta_data->>'account_type', 'empresa')
+  )
   on conflict (id) do nothing;
   return new;
 end;

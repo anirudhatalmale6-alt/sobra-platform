@@ -13,9 +13,12 @@ export const CONDITIONS: Condition[] = [
   "Liquidação",
 ];
 
+export type AccountType = "empresa" | "particular";
+
 export interface Profile {
   id: string;
   company_name: string;
+  account_type: AccountType;
   description: string | null;
   location: string | null;
   address: string | null;

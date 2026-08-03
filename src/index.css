@@ -201,3 +201,9 @@ footer.site a:hover{color:#fff}
 .activity .ticker{margin-left:auto;color:#9fb0c2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42%;animation:fadein .5s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 @media(max-width:640px){.activity .ticker{display:none}.activity-in{gap:12px}}
+
+/* segmented toggle (account type) */
+.segmented{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.segmented button{padding:9px 16px;background:#fff;border:0;cursor:pointer;font-weight:600;color:var(--muted);font-size:.88rem;transition:.15s}
+.segmented button+button{border-left:1px solid var(--line)}
+.segmented button.on{background:var(--green);color:#fff}

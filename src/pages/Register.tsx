@@ -7,6 +7,7 @@ import PhoneInput from "../components/PhoneInput";
 
 export default function Register() {
   const { backendReady } = useAuth();
+  const [accountType, setAccountType] = useState<"empresa" | "particular">("empresa");
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
   const [phone, setPhone] = useState("");
@@ -33,7 +34,7 @@ export default function Register() {
     const { data, error: signErr } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { company_name: company } },
+      options: { data: { company_name: company, account_type: accountType } },
     });
 
     if (signErr) {
@@ -48,6 +49,7 @@ export default function Register() {
       await supabase.from("profiles").upsert({
         id: data.user.id,
         company_name: company,
+        account_type: accountType,
         location,
         phone,
       });
@@ -82,7 +84,7 @@ export default function Register() {
   return (
     <div className="auth-wrap">
       <div className="panel">
-        <h1>Criar conta de empresa</h1>
+        <h1>Criar conta</h1>
         <p className="sub">Grátis. 3 anúncios por semana incluídos.</p>
 
         {!backendReady && (
@@ -95,8 +97,20 @@ export default function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Nome da empresa</label>
-            <input value={company} onChange={(e) => setCompany(e.target.value)} required />
+            <label>Tipo de conta</label>
+            <div className="segmented">
+              <button type="button" className={accountType === "empresa" ? "on" : ""} onClick={() => setAccountType("empresa")}>
+                Empresa / Loja
+              </button>
+              <button type="button" className={accountType === "particular" ? "on" : ""} onClick={() => setAccountType("particular")}>
+                Particular
+              </button>
+            </div>
+          </div>
+          <div className="field">
+            <label>{accountType === "empresa" ? "Nome da loja / empresa" : "Nome (pessoa)"}</label>
+            <input value={company} onChange={(e) => setCompany(e.target.value)} required
+              placeholder={accountType === "empresa" ? "Ex: Mercearia do Filipe" : "Ex: Filipe Dias"} />
           </div>
           <div className="row2">
             <div className="field">

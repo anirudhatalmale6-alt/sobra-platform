@@ -8,6 +8,7 @@ import PhoneInput from "../components/PhoneInput";
 export default function EditProfile() {
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const [accountType, setAccountType] = useState<"empresa" | "particular">("empresa");
   const [company, setCompany] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
@@ -20,6 +21,7 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (profile) {
+      setAccountType(profile.account_type === "particular" ? "particular" : "empresa");
       setCompany(profile.company_name || "");
       setDescription(profile.description || "");
       setLocation(profile.location || "");
@@ -38,6 +40,7 @@ export default function EditProfile() {
     const { error } = await supabase.from("profiles").upsert({
       id: user.id,
       company_name: company,
+      account_type: accountType,
       description,
       location,
       address,
@@ -67,7 +70,18 @@ export default function EditProfile() {
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Nome da empresa</label>
+            <label>Tipo de conta</label>
+            <div className="segmented">
+              <button type="button" className={accountType === "empresa" ? "on" : ""} onClick={() => setAccountType("empresa")}>
+                Empresa / Loja
+              </button>
+              <button type="button" className={accountType === "particular" ? "on" : ""} onClick={() => setAccountType("particular")}>
+                Particular
+              </button>
+            </div>
+          </div>
+          <div className="field">
+            <label>{accountType === "empresa" ? "Nome da loja / empresa" : "Nome (pessoa)"}</label>
             <input value={company} onChange={(e) => setCompany(e.target.value)} required />
           </div>
           <div className="field">
