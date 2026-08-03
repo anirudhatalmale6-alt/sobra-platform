@@ -1,7 +1,7 @@
 // Runtime configuration for the Sobra platform.
-// Fill these in with the values from the client's Supabase project
-// (Project Settings > API). No rebuild is needed after editing this file.
+// Values from the client's Supabase project (StockX).
+// No rebuild is needed after editing this file.
 window.__SOBRA_CONFIG__ = {
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://tutfbayigfcemiffcjhg.supabase.co",
+  supabaseAnonKey: "sb_publishable_pXaM-hG4C0Bz_WTTi-8oDQ_aFOnZh-E",
 };
