@@ -11,8 +11,33 @@ export interface ListingFilters {
   limit?: number;
 }
 
-const listingSelect =
-  "*, profiles:owner ( company_name, logo_url, location, address, phone )";
+// listings.owner references auth.users (not public.profiles), so PostgREST
+// cannot embed the profile automatically. We fetch the owner profiles in a
+// second query and join them in JS.
+const profileFields = "id, company_name, logo_url, location, address, phone";
+
+async function attachProfiles(listings: Listing[]): Promise<Listing[]> {
+  const ownerIds = [...new Set(listings.map((l) => l.owner))].filter(Boolean);
+  if (!ownerIds.length) return listings;
+  const { data: profs } = await supabase
+    .from("profiles")
+    .select(profileFields)
+    .in("id", ownerIds);
+  const map = new Map((profs || []).map((p: any) => [p.id, p]));
+  for (const l of listings) {
+    const p: any = map.get(l.owner);
+    if (p) {
+      l.profiles = {
+        company_name: p.company_name,
+        logo_url: p.logo_url,
+        location: p.location,
+        address: p.address,
+        phone: p.phone,
+      };
+    }
+  }
+  return listings;
+}
 
 export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {
   if (!BACKEND_READY) {
@@ -37,7 +62,7 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
 
   let query = supabase
     .from("listings")
-    .select(listingSelect)
+    .select("*")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
@@ -50,7 +75,7 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
 
   const { data, error } = await query;
   if (error) throw error;
-  return (data as unknown as Listing[]) || [];
+  return attachProfiles((data as unknown as Listing[]) || []);
 }
 
 export async function fetchListing(id: string): Promise<Listing | null> {
@@ -59,11 +84,13 @@ export async function fetchListing(id: string): Promise<Listing | null> {
   }
   const { data, error } = await supabase
     .from("listings")
-    .select(listingSelect)
+    .select("*")
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return (data as unknown as Listing) || null;
+  if (!data) return null;
+  const [withProfile] = await attachProfiles([data as unknown as Listing]);
+  return withProfile;
 }
 
 export async function fetchMyListings(owner: string): Promise<Listing[]> {
