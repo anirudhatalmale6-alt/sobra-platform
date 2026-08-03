@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Listing } from "../lib/types";
 import { categoryById } from "../lib/categories";
 import { euro, discountPct } from "../lib/format";
+import CategoryIcon from "./CategoryIcon";
 
 export default function ProductCard({ listing }: { listing: Listing }) {
   const off = discountPct(listing.price, listing.original_price);
@@ -14,7 +15,7 @@ export default function ProductCard({ listing }: { listing: Listing }) {
     <Link className="card" to={`/anuncio/${listing.id}`}>
       <div className="thumb">
         <span className={`badge ${isNew ? "new" : ""}`}>{listing.condition}</span>
-        {cover ? <img src={cover} alt={listing.title} loading="lazy" /> : <span>{cat?.icon || "📦"}</span>}
+        {cover ? <img src={cover} alt={listing.title} loading="lazy" /> : <span className="thumb-ico">{cat ? <CategoryIcon slug={cat.slug} size={40} /> : null}</span>}
       </div>
       <div className="card-body">
         <div className="seller">

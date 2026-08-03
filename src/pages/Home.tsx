@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CATEGORIES } from "../lib/categories";
+import CategoryIcon from "../components/CategoryIcon";
 import { CONDITIONS } from "../lib/types";
 import type { Listing } from "../lib/types";
 import { fetchListings } from "../lib/api";
@@ -82,7 +83,7 @@ export default function Home() {
           <div className="cats">
             {CATEGORIES.map((c) => (
               <Link className="cat" to={`/produtos?cat=${c.slug}`} key={c.id}>
-                <div className="ico">{c.icon}</div>
+                <div className="ico"><CategoryIcon slug={c.slug} size={26} /></div>
                 <b>{c.name}</b>
                 <span>{c.subs.length} subcategorias</span>
               </Link>

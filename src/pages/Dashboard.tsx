@@ -5,6 +5,7 @@ import type { Listing } from "../lib/types";
 import { fetchMyListings, deleteListing } from "../lib/api";
 import { categoryById } from "../lib/categories";
 import { euro, daysLeft } from "../lib/format";
+import CategoryIcon from "../components/CategoryIcon";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -61,7 +62,7 @@ export default function Dashboard() {
           return (
             <div className="list-row" key={l.id}>
               <Link className="mini" to={`/anuncio/${l.id}`}>
-                {cover ? <img src={cover} alt={l.title} /> : <span>{cat?.icon || "📦"}</span>}
+                {cover ? <img src={cover} alt={l.title} /> : <span className="thumb-ico">{cat ? <CategoryIcon slug={cat.slug} size={26} /> : null}</span>}
               </Link>
               <div className="info">
                 <h3>{l.title}</h3>

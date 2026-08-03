@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
+import { LOCATIONS } from "../lib/locations";
+import PhoneInput from "../components/PhoneInput";
 
 export default function Register() {
   const { backendReady } = useAuth();
@@ -98,12 +100,17 @@ export default function Register() {
           </div>
           <div className="row2">
             <div className="field">
-              <label>Localidade</label>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Porto" />
+              <label>Localidade (distrito)</label>
+              <select value={location} onChange={(e) => setLocation(e.target.value)}>
+                <option value="">— Escolher —</option>
+                {LOCATIONS.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
             </div>
             <div className="field">
               <label>Telefone</label>
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Ex: 912 345 678" />
+              <PhoneInput value={phone} onChange={setPhone} />
             </div>
           </div>
           <div className="field">

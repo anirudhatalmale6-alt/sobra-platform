@@ -18,6 +18,7 @@ export interface Profile {
   company_name: string;
   description: string | null;
   location: string | null;
+  address: string | null;
   phone: string | null;
   website: string | null;
   logo_url: string | null;
@@ -40,6 +41,8 @@ export interface Listing {
   status: "active" | "expired" | "hidden";
   created_at: string;
   expires_at: string | null;
+  expiry_date: string | null;      // validade do produto (perto do fim)
+  promo_ends_at: string | null;    // data de fim da promoção
   // joined
-  profiles?: Pick<Profile, "company_name" | "logo_url" | "location">;
+  profiles?: Pick<Profile, "company_name" | "logo_url" | "location" | "address" | "phone">;
 }

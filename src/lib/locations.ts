@@ -1,0 +1,23 @@
+// Distritos de Portugal + Regiões Autónomas (para o seletor de localidade, estilo OLX).
+export const LOCATIONS: string[] = [
+  "Aveiro",
+  "Beja",
+  "Braga",
+  "Bragança",
+  "Castelo Branco",
+  "Coimbra",
+  "Évora",
+  "Faro",
+  "Guarda",
+  "Leiria",
+  "Lisboa",
+  "Portalegre",
+  "Porto",
+  "Santarém",
+  "Setúbal",
+  "Viana do Castelo",
+  "Vila Real",
+  "Viseu",
+  "Ilha da Madeira",
+  "Ilha dos Açores",
+];

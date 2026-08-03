@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { CATEGORIES } from "../lib/categories";
 import { CONDITIONS } from "../lib/types";
 import type { Condition } from "../lib/types";
+import { LOCATIONS } from "../lib/locations";
 import {
   createListing,
   updateListing,
@@ -26,6 +27,9 @@ export default function NewListing() {
   const [categoryId, setCategoryId] = useState<number>(CATEGORIES[0].id);
   const [subId, setSubId] = useState<number | "">("");
   const [location, setLocation] = useState("");
+  const [nearExpiry, setNearExpiry] = useState(false);
+  const [expiryDate, setExpiryDate] = useState("");
+  const [promoEndsAt, setPromoEndsAt] = useState("");
   const [images, setImages] = useState<PendingImage[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [error, setError] = useState("");
@@ -44,6 +48,9 @@ export default function NewListing() {
         setCategoryId(l.category_id);
         setSubId(l.subcategory_id ?? "");
         setLocation(l.location || "");
+        setExpiryDate(l.expiry_date || "");
+        setNearExpiry(Boolean(l.expiry_date));
+        setPromoEndsAt(l.promo_ends_at || "");
         setExistingImages(l.images || []);
       }
       setLoadingData(false);
@@ -79,6 +86,8 @@ export default function NewListing() {
         subcategory_id: subId === "" ? null : Number(subId),
         location: location.trim(),
         images: [...existingImages, ...uploaded],
+        expiry_date: nearExpiry && expiryDate ? expiryDate : null,
+        promo_ends_at: promoEndsAt || null,
       };
 
       if (editing && id) {
@@ -134,7 +143,7 @@ export default function NewListing() {
               <label>Categoria</label>
               <select value={categoryId} onChange={(e) => { setCategoryId(Number(e.target.value)); setSubId(""); }}>
                 {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
@@ -159,8 +168,33 @@ export default function NewListing() {
               </select>
             </div>
             <div className="field">
-              <label>Localidade</label>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex: Lisboa" />
+              <label>Localidade (distrito)</label>
+              <select value={location} onChange={(e) => setLocation(e.target.value)} required>
+                <option value="">— Escolher —</option>
+                {LOCATIONS.map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="field">
+            <label className="check">
+              <input type="checkbox" checked={nearExpiry} onChange={(e) => setNearExpiry(e.target.checked)} />
+              Produto com data de validade próxima
+            </label>
+          </div>
+
+          <div className="row2">
+            {nearExpiry && (
+              <div className="field">
+                <label>Data de validade</label>
+                <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} required={nearExpiry} />
+              </div>
+            )}
+            <div className="field">
+              <label>Fim da promoção <span style={{ color: "var(--muted)", fontWeight: 400 }}>(opcional)</span></label>
+              <input type="date" value={promoEndsAt} onChange={(e) => setPromoEndsAt(e.target.value)} />
             </div>
           </div>
 

@@ -7,7 +7,11 @@ const daysFromNow = (d: number) =>
   new Date(Date.now() + d * 86400000).toISOString();
 const daysAgo = (d: number) => new Date(Date.now() - d * 86400000).toISOString();
 
-export const SAMPLE_LISTINGS: Listing[] = [
+type SampleRaw = Omit<Listing, "expiry_date" | "promo_ends_at" | "profiles"> & {
+  profiles?: { company_name: string; logo_url: string | null; location: string | null };
+};
+
+const RAW: SampleRaw[] = [
   {
     id: "s1", owner: "d1", title: "Ténis running coleção anterior",
     description: "Stock de fim de estação, modelo do ano passado, novos em caixa.",
@@ -73,3 +77,10 @@ export const SAMPLE_LISTINGS: Listing[] = [
     profiles: { company_name: "InfoStore", logo_url: null, location: "Lisboa" },
   },
 ];
+
+export const SAMPLE_LISTINGS: Listing[] = RAW.map((r) => ({
+  ...r,
+  expiry_date: null,
+  promo_ends_at: null,
+  profiles: r.profiles ? { ...r.profiles, address: null, phone: null } : undefined,
+}));

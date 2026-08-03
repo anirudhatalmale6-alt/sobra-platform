@@ -58,6 +58,11 @@ create index if not exists listings_category_idx on public.listings(category_id)
 create index if not exists listings_status_idx   on public.listings(status);
 create index if not exists listings_created_idx  on public.listings(created_at desc);
 
+-- ---------- COLUNAS ADICIONAIS (migração, seguras de correr várias vezes) ----------
+alter table public.profiles add column if not exists address       text;
+alter table public.listings add column if not exists expiry_date   date;  -- validade próxima
+alter table public.listings add column if not exists promo_ends_at date;  -- fim da promoção
+
 -- ---------- AUTO-CREATE PROFILE ON SIGN-UP ----------
 create or replace function public.handle_new_user()
 returns trigger

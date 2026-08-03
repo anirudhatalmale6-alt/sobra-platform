@@ -12,7 +12,7 @@ export interface ListingFilters {
 }
 
 const listingSelect =
-  "*, profiles:owner ( company_name, logo_url, location )";
+  "*, profiles:owner ( company_name, logo_url, location, address, phone )";
 
 export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {
   if (!BACKEND_READY) {
@@ -98,6 +98,8 @@ export type NewListingInput = {
   subcategory_id: number | null;
   location: string;
   images: string[];
+  expiry_date: string | null;
+  promo_ends_at: string | null;
 };
 
 export async function createListing(owner: string, input: NewListingInput) {

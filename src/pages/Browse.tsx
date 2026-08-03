@@ -67,7 +67,7 @@ export default function Browse() {
             className={`chip ${catSlug === c.slug ? "on" : ""}`}
             onClick={() => update("cat", c.slug)}
           >
-            {c.icon} {c.name}
+            {c.name}
           </span>
         ))}
       </div>

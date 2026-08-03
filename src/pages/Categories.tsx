@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { CATEGORIES } from "../lib/categories";
+import CategoryIcon from "../components/CategoryIcon";
 
 export default function Categories() {
   return (
@@ -14,8 +15,10 @@ export default function Categories() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 18 }}>
         {CATEGORIES.map((c) => (
           <div className="panel" key={c.id} style={{ padding: 20 }}>
-            <Link to={`/produtos?cat=${c.slug}`} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: "1.6rem" }}>{c.icon}</span>
+            <Link to={`/produtos?cat=${c.slug}`} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ display: "grid", placeItems: "center", width: 42, height: 42, borderRadius: 11, background: "var(--green-light)", color: "var(--green)" }}>
+                <CategoryIcon slug={c.slug} size={23} />
+              </span>
               <b style={{ fontSize: "1.05rem" }}>{c.name}</b>
             </Link>
             <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
