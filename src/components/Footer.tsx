@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="wrap">
         <div className="foot-grid">
           <div>
-            <div className="foot-logo">♺ Sobra</div>
+            <div className="foot-logo">Nex<span style={{ color: "var(--green)" }}>Stock</span></div>
             <p style={{ fontSize: ".88rem", maxWidth: "34ch" }}>
               O marketplace que dá uma segunda oportunidade ao stock e poupa
               dinheiro a quem compra.
@@ -31,7 +31,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="foot-bot">
-          <span>© 2026 Sobra · Feito em Portugal 🇵🇹</span>
+          <span>© 2026 NexStock · Feito em Portugal 🇵🇹</span>
           <span>Menos desperdício, mais poupança.</span>
         </div>
       </div>

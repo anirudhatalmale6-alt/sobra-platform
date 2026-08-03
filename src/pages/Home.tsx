@@ -37,7 +37,7 @@ export default function Home() {
             Stock a mais de umas, <span>poupança</span> a mais de outras.
           </h1>
           <p>
-            A Sobra liga empresas com excedente de stock, fim de estação e saldos
+            A NexStock liga empresas com excedente de stock, fim de estação e saldos
             a compradores que procuram os melhores preços. Sem intermediários
             complicados.
           </p>

@@ -21,8 +21,7 @@ export default function Header() {
       <header className="site">
         <div className="wrap nav">
           <Link className="logo" to="/">
-            <span className="mark">♺</span>
-            <span>So<b>bra</b></span>
+            <img className="logo-img" src={`${import.meta.env.BASE_URL}logo.png`} alt="NexStock" />
           </Link>
           <nav className="nav-links">
             <NavLink to="/produtos">Produtos</NavLink>
