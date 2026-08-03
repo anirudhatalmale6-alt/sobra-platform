@@ -86,6 +86,19 @@ export default function NewListing() {
       return;
     }
     const origNum = originalPrice ? parseFloat(originalPrice.replace(",", ".")) : null;
+    if (origNum != null && !isNaN(origNum) && priceNum > origNum) {
+      setError("O preço promocional não pode ser superior ao preço original.");
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    if (promoEndsAt && promoEndsAt < today) {
+      setError("A data de fim da promoção não pode ser no passado.");
+      return;
+    }
+    if (nearExpiry && expiryDate && expiryDate < today) {
+      setError("A data de validade não pode ser no passado.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -220,12 +233,12 @@ export default function NewListing() {
             {nearExpiry && (
               <div className="field">
                 <label>Data de validade</label>
-                <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} required={nearExpiry} />
+                <input type="date" min={new Date().toISOString().slice(0, 10)} value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} required={nearExpiry} />
               </div>
             )}
             <div className="field">
               <label>Fim da promoção <span style={{ color: "var(--muted)", fontWeight: 400 }}>(opcional)</span></label>
-              <input type="date" value={promoEndsAt} onChange={(e) => setPromoEndsAt(e.target.value)} />
+              <input type="date" min={new Date().toISOString().slice(0, 10)} value={promoEndsAt} onChange={(e) => setPromoEndsAt(e.target.value)} />
             </div>
           </div>
 
@@ -241,7 +254,7 @@ export default function NewListing() {
                 ))}
               </div>
             )}
-            <ImageUploader images={images} onChange={setImages} max={6 - existingImages.length} />
+            <ImageUploader images={images} onChange={setImages} max={3 - existingImages.length} />
           </div>
 
           <button

@@ -136,7 +136,15 @@ export default function ListingDetail() {
               {listing.profiles?.address && (
                 <div className="contact-line">
                   <svg className="ci" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                  <span>{listing.profiles.address}</span>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      [listing.profiles.address, listing.profiles.location].filter(Boolean).join(", ")
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {listing.profiles.address}
+                  </a>
                 </div>
               )}
               {!listing.profiles?.phone && !listing.profiles?.address && (

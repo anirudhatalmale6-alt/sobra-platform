@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 440" role="img" aria-label="NexStock">
+  <defs>
+    <style>
+      .navy{fill:#152537}
+      .green{fill:#4fae2b}
+      .wm{font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-weight:800;font-size:74px;letter-spacing:1px}
+    </style>
+  </defs>
+
+  <!-- Mark: navy left riser + green rising arrow forming an N -->
+  <rect class="navy" x="150" y="150" width="46" height="150" rx="12"/>
+  <path class="green" fill="none" stroke="#4fae2b" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"
+        d="M180 156 L256 286 L330 150"/>
+  <path class="green" d="M346 118 L368 172 L292 130 Z"/>
+
+  <!-- Wordmark -->
+  <text x="240" y="408" text-anchor="middle" class="wm">
+    <tspan class="navy">NEX</tspan><tspan class="green">STOCK</tspan>
+  </text>
+</svg>

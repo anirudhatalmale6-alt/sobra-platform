@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Browse from "./pages/Browse";
@@ -17,6 +18,7 @@ import NotFound from "./pages/NotFound";
 export default function App() {
   return (
     <div className="app">
+      <ScrollToTop />
       <Header />
       <main className="grow">
         <Routes>

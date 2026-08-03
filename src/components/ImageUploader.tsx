@@ -11,7 +11,7 @@ interface Props {
   max?: number;
 }
 
-export default function ImageUploader({ images, onChange, max = 6 }: Props) {
+export default function ImageUploader({ images, onChange, max = 3 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function addFiles(files: FileList | null) {

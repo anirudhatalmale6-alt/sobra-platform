@@ -25,8 +25,13 @@ export default function Register() {
       setError("A base de dados ainda não está ligada. Volte dentro de momentos.");
       return;
     }
-    if (password.length < 6) {
-      setError("A password deve ter pelo menos 6 caracteres.");
+    const emailOk = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email.trim());
+    if (!emailOk) {
+      setError("Introduza um email válido.");
+      return;
+    }
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      setError("A password deve ter pelo menos 8 caracteres, incluindo letras e números.");
       return;
     }
     setLoading(true);
@@ -133,8 +138,8 @@ export default function Register() {
           </div>
           <div className="field">
             <label>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
-            <div className="hint">Mínimo 6 caracteres.</div>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" minLength={8} />
+            <div className="hint">Mínimo 8 caracteres, com letras e números.</div>
           </div>
           <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={loading}>
             {loading ? "A criar…" : "Criar conta"}
