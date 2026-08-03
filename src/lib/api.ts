@@ -6,6 +6,9 @@ export interface ListingFilters {
   categoryId?: number;
   subcategoryId?: number;
   condition?: string;
+  location?: string;
+  priceMin?: number;
+  priceMax?: number;
   q?: string;
   owner?: string;
   limit?: number;
@@ -46,6 +49,9 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
     if (filters.categoryId) rows = rows.filter((r) => r.category_id === filters.categoryId);
     if (filters.subcategoryId) rows = rows.filter((r) => r.subcategory_id === filters.subcategoryId);
     if (filters.condition) rows = rows.filter((r) => r.condition === filters.condition);
+    if (filters.location) rows = rows.filter((r) => r.location === filters.location);
+    if (filters.priceMin != null) rows = rows.filter((r) => r.price >= filters.priceMin!);
+    if (filters.priceMax != null) rows = rows.filter((r) => r.price <= filters.priceMax!);
     if (filters.owner) rows = rows.filter((r) => r.owner === filters.owner);
     if (filters.q) {
       const q = filters.q.toLowerCase();
@@ -69,6 +75,9 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
   if (filters.categoryId) query = query.eq("category_id", filters.categoryId);
   if (filters.subcategoryId) query = query.eq("subcategory_id", filters.subcategoryId);
   if (filters.condition) query = query.eq("condition", filters.condition);
+  if (filters.location) query = query.eq("location", filters.location);
+  if (filters.priceMin != null) query = query.gte("price", filters.priceMin);
+  if (filters.priceMax != null) query = query.lte("price", filters.priceMax);
   if (filters.owner) query = query.eq("owner", filters.owner);
   if (filters.q) query = query.ilike("title", `%${filters.q}%`);
   if (filters.limit) query = query.limit(filters.limit);
@@ -102,6 +111,30 @@ export async function fetchMyListings(owner: string): Promise<Listing[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data as unknown as Listing[]) || [];
+}
+
+export interface PlatformStats {
+  activeListings: number;
+  businesses: number;
+  newThisWeek: number;
+}
+
+// Real, honest platform activity numbers for the "live" bar on the homepage.
+export async function fetchStats(): Promise<PlatformStats> {
+  if (!BACKEND_READY) {
+    return { activeListings: SAMPLE_LISTINGS.length, businesses: 6, newThisWeek: SAMPLE_LISTINGS.length };
+  }
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+  const [a, b, c] = await Promise.all([
+    supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active"),
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active").gte("created_at", weekAgo),
+  ]);
+  return {
+    activeListings: a.count || 0,
+    businesses: b.count || 0,
+    newThisWeek: c.count || 0,
+  };
 }
 
 export async function fetchProfile(id: string): Promise<Profile | null> {

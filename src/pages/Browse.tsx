@@ -4,6 +4,8 @@ import { CATEGORIES, categoryBySlug } from "../lib/categories";
 import { CONDITIONS } from "../lib/types";
 import type { Listing } from "../lib/types";
 import { fetchListings } from "../lib/api";
+import { LOCATIONS } from "../lib/locations";
+import { discountPct } from "../lib/format";
 import ProductCard from "../components/ProductCard";
 
 export default function Browse() {
@@ -14,6 +16,10 @@ export default function Browse() {
   const catSlug = params.get("cat") || "";
   const subId = params.get("sub") ? Number(params.get("sub")) : undefined;
   const condition = params.get("estado") || "";
+  const location = params.get("local") || "";
+  const pmin = params.get("pmin") || "";
+  const pmax = params.get("pmax") || "";
+  const ord = params.get("ord") || "recentes";
   const q = params.get("q") || "";
 
   const category = useMemo(() => categoryBySlug(catSlug), [catSlug]);
@@ -24,12 +30,28 @@ export default function Browse() {
       categoryId: category?.id,
       subcategoryId: subId,
       condition: condition || undefined,
+      location: location || undefined,
+      priceMin: pmin ? Number(pmin) : undefined,
+      priceMax: pmax ? Number(pmax) : undefined,
       q: q || undefined,
     })
       .then(setListings)
       .catch(() => setListings([]))
       .finally(() => setLoading(false));
-  }, [category?.id, subId, condition, q]);
+  }, [category?.id, subId, condition, location, pmin, pmax, q]);
+
+  const sorted = useMemo(() => {
+    const arr = [...listings];
+    if (ord === "preco-asc") arr.sort((a, b) => a.price - b.price);
+    else if (ord === "preco-desc") arr.sort((a, b) => b.price - a.price);
+    else if (ord === "desconto")
+      arr.sort(
+        (a, b) =>
+          (discountPct(b.price, b.original_price) || 0) -
+          (discountPct(a.price, a.original_price) || 0)
+      );
+    return arr;
+  }, [listings, ord]);
 
   function update(key: string, value: string) {
     const next = new URLSearchParams(params);
@@ -106,11 +128,46 @@ export default function Browse() {
         ))}
       </div>
 
+      {/* distrito / preço / ordenar */}
+      <div className="filters">
+        <div className="fl">
+          <label>Distrito</label>
+          <select value={location} onChange={(e) => update("local", e.target.value)}>
+            <option value="">Todos</option>
+            {LOCATIONS.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+        </div>
+        <div className="fl">
+          <label>Preço mín. (€)</label>
+          <input inputMode="numeric" value={pmin} onChange={(e) => update("pmin", e.target.value.replace(/[^\d]/g, ""))} placeholder="0" />
+        </div>
+        <div className="fl">
+          <label>Preço máx. (€)</label>
+          <input inputMode="numeric" value={pmax} onChange={(e) => update("pmax", e.target.value.replace(/[^\d]/g, ""))} placeholder="—" />
+        </div>
+        <div className="fl">
+          <label>Ordenar</label>
+          <select value={ord} onChange={(e) => update("ord", e.target.value === "recentes" ? "" : e.target.value)}>
+            <option value="recentes">Mais recentes</option>
+            <option value="preco-asc">Preço: mais baixo</option>
+            <option value="preco-desc">Preço: mais alto</option>
+            <option value="desconto">Maior desconto</option>
+          </select>
+        </div>
+        {(location || pmin || pmax || ord !== "recentes" || condition || subId) && (
+          <button className="btn btn-ghost fl-clear" onClick={() => setParams(catSlug ? new URLSearchParams({ cat: catSlug }) : new URLSearchParams())}>
+            Limpar filtros
+          </button>
+        )}
+      </div>
+
       {loading ? (
         <div className="spinner" />
-      ) : listings.length ? (
+      ) : sorted.length ? (
         <div className="grid">
-          {listings.map((l) => (
+          {sorted.map((l) => (
             <ProductCard key={l.id} listing={l} />
           ))}
         </div>

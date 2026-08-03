@@ -6,6 +6,7 @@ import { CONDITIONS } from "../lib/types";
 import type { Listing } from "../lib/types";
 import { fetchListings } from "../lib/api";
 import ProductCard from "../components/ProductCard";
+import ActivityBar from "../components/ActivityBar";
 
 export default function Home() {
   const [q, setQ] = useState("");
@@ -31,6 +32,7 @@ export default function Home() {
 
   return (
     <>
+      <ActivityBar />
       <div className="hero">
         <div className="wrap">
           <span className="pill">♻ Menos desperdício · Mais poupança</span>
