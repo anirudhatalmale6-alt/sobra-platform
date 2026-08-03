@@ -66,10 +66,12 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
     return rows;
   }
 
+  const nowIso = new Date().toISOString();
   let query = supabase
     .from("listings")
     .select("*")
     .eq("status", "active")
+    .or(`expires_at.gt.${nowIso},expires_at.is.null`)
     .order("created_at", { ascending: false });
 
   if (filters.categoryId) query = query.eq("category_id", filters.categoryId);

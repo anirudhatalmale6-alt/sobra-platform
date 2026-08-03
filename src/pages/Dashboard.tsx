@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import type { Listing } from "../lib/types";
 import { fetchMyListings, deleteListing } from "../lib/api";
 import { categoryById } from "../lib/categories";
-import { euro, daysLeft } from "../lib/format";
+import { euro, daysLeft, weeklyUsage } from "../lib/format";
 import CategoryIcon from "../components/CategoryIcon";
 
 export default function Dashboard() {
@@ -33,8 +33,11 @@ export default function Dashboard() {
     setListings((prev) => prev.filter((l) => l.id !== id));
   }
 
-  const activeCount = listings.filter((l) => l.status === "active").length;
-  const freeLeft = Math.max(0, 3 - activeCount);
+  const now = Date.now();
+  const activeCount = listings.filter(
+    (l) => l.status === "active" && (!l.expires_at || new Date(l.expires_at).getTime() > now)
+  ).length;
+  const { left: freeLeft, renewsAt } = weeklyUsage(listings.map((l) => l.created_at));
 
   return (
     <div className="wrap" style={{ paddingTop: 26, paddingBottom: 40 }}>
@@ -42,7 +45,10 @@ export default function Dashboard() {
         <div>
           <h1>{profile?.company_name || "O meu painel"}</h1>
           <p style={{ color: "var(--muted)", fontSize: ".92rem" }}>
-            {activeCount} anúncio(s) ativo(s) · {freeLeft} grátis disponível(is) esta semana
+            {activeCount} anúncio(s) ativo(s) · {freeLeft} de 3 grátis disponível(is) esta semana
+            {freeLeft === 0 && renewsAt && (
+              <> · renova {renewsAt.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" })}</>
+            )}
           </p>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

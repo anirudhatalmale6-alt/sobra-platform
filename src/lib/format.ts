@@ -15,11 +15,27 @@ export const timeAgo = (iso: string) => {
   return "agora mesmo";
 };
 
-// A listing is live for 1 week (E1 lays the field; the 3-free/week limit
-// and hard enforcement arrive in a later stage).
+// A listing is live for 1 week.
 export const daysLeft = (expiresAt: string | null) => {
   if (!expiresAt) return null;
   const diff = new Date(expiresAt).getTime() - Date.now();
   if (diff <= 0) return 0;
   return Math.ceil(diff / 86400000);
 };
+
+export const FREE_PER_WEEK = 3;
+
+// Rolling weekly quota: 3 free ads per 7-day window. `renewsAt` is when the
+// next free slot opens (when the oldest ad in the window ages past 7 days).
+export function weeklyUsage(createdDates: string[]) {
+  const weekMs = 7 * 86400000;
+  const cutoff = Date.now() - weekMs;
+  const inWeek = createdDates
+    .map((d) => new Date(d).getTime())
+    .filter((t) => t >= cutoff)
+    .sort((a, b) => a - b);
+  const used = inWeek.length;
+  const left = Math.max(0, FREE_PER_WEEK - used);
+  const renewsAt = used >= FREE_PER_WEEK ? new Date(inWeek[0] + weekMs) : null;
+  return { used, left, renewsAt };
+}

@@ -9,8 +9,10 @@ import {
   createListing,
   updateListing,
   fetchListing,
+  fetchMyListings,
   uploadImages,
 } from "../lib/api";
+import { weeklyUsage } from "../lib/format";
 import ImageUploader, { type PendingImage } from "../components/ImageUploader";
 
 export default function NewListing() {
@@ -35,6 +37,7 @@ export default function NewListing() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(editing);
+  const [quota, setQuota] = useState<{ left: number; renewsAt: Date | null } | null>(null);
 
   useEffect(() => {
     if (!editing || !id) return;
@@ -57,12 +60,26 @@ export default function NewListing() {
     });
   }, [editing, id]);
 
+  useEffect(() => {
+    if (editing || !user) return;
+    fetchMyListings(user.id)
+      .then((ls) => {
+        const { left, renewsAt } = weeklyUsage(ls.map((l) => l.created_at));
+        setQuota({ left, renewsAt });
+      })
+      .catch(() => setQuota({ left: 3, renewsAt: null }));
+  }, [editing, user]);
+
   const subs = CATEGORIES.find((c) => c.id === categoryId)?.subs || [];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!user) return;
+    if (!editing && quota && quota.left <= 0) {
+      setError("Atingiu o limite de 3 anúncios grátis esta semana.");
+      return;
+    }
     const priceNum = parseFloat(price.replace(",", "."));
     if (isNaN(priceNum) || priceNum < 0) {
       setError("Indique um preço válido.");
@@ -113,6 +130,20 @@ export default function NewListing() {
         </div>
         <h1>{editing ? "Editar anúncio" : "Publicar anúncio"}</h1>
         <p className="sub">Preencha os dados do produto. O anúncio fica visível 1 semana.</p>
+
+        {!editing && quota && quota.left > 0 && (
+          <div className="ok-box">
+            Tem {quota.left} de 3 anúncios grátis disponíveis esta semana.
+          </div>
+        )}
+        {!editing && quota && quota.left <= 0 && (
+          <div className="error-box">
+            Atingiu o limite de 3 anúncios grátis esta semana.
+            {quota.renewsAt &&
+              ` Renova a ${quota.renewsAt.toLocaleDateString("pt-PT", { day: "2-digit", month: "2-digit" })}.`}{" "}
+            Em breve poderá publicar mais anúncios ou destacá-los.
+          </div>
+        )}
 
         {error && <div className="error-box">{error}</div>}
 
@@ -213,7 +244,11 @@ export default function NewListing() {
             <ImageUploader images={images} onChange={setImages} max={6 - existingImages.length} />
           </div>
 
-          <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={loading}>
+          <button
+            className="btn btn-primary btn-block btn-lg"
+            type="submit"
+            disabled={loading || (!editing && quota?.left === 0)}
+          >
             {loading ? "A guardar…" : editing ? "Guardar alterações" : "Publicar anúncio"}
           </button>
         </form>
