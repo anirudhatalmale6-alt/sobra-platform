@@ -158,7 +158,7 @@ insert into public.categories (id, slug, name, icon, sort) values
 on conflict (id) do update set name = excluded.name, icon = excluded.icon, slug = excluded.slug;
 
 insert into public.subcategories (id, category_id, slug, name) values
-  (101,1,'talho','Talho'),(102,1,'supermercado','Supermercado'),(103,1,'padaria','Padaria'),(104,1,'mercearia','Mercearia'),(105,1,'bebidas','Bebidas'),(106,1,'congelados','Congelados'),
+  (101,1,'talho','Talho'),(102,1,'supermercado','Supermercado'),(103,1,'padaria','Padaria'),(104,1,'mercearia','Mercearia'),(105,1,'bebidas','Bebidas'),(106,1,'congelados','Congelados'),(107,1,'perto-validade','Perto da validade'),
   (201,2,'homem','Homem'),(202,2,'mulher','Mulher'),(203,2,'crianca','Criança'),(204,2,'calcado','Calçado'),(205,2,'acessorios','Acessórios'),
   (301,3,'mobiliario','Mobiliário'),(302,3,'decoracao','Decoração'),(303,3,'cozinha','Cozinha'),(304,3,'eletrodomesticos','Eletrodomésticos'),(305,3,'jardim','Jardim'),
   (401,4,'materiais','Materiais'),(402,4,'ferramentas','Ferramentas'),(403,4,'canalizacao','Canalização'),(404,4,'eletrico','Elétrico'),(405,4,'tintas','Tintas'),

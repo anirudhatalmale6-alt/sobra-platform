@@ -20,6 +20,7 @@ export const CATEGORIES: CategoryDef[] = [
       { id: 104, slug: "mercearia", name: "Mercearia" },
       { id: 105, slug: "bebidas", name: "Bebidas" },
       { id: 106, slug: "congelados", name: "Congelados" },
+      { id: 107, slug: "perto-validade", name: "Perto da validade" },
     ],
   },
   {
