@@ -10,6 +10,7 @@ export default function Register() {
   const [accountType, setAccountType] = useState<"empresa" | "particular">("empresa");
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +35,10 @@ export default function Register() {
       setError("A password deve ter pelo menos 8 caracteres, incluindo letras e números.");
       return;
     }
+    if (accountType === "empresa" && !address.trim()) {
+      setError("Indique a morada da loja para que os clientes a possam encontrar.");
+      return;
+    }
     setLoading(true);
 
     const { data, error: signErr } = await supabase.auth.signUp({
@@ -56,6 +61,7 @@ export default function Register() {
         company_name: company,
         account_type: accountType,
         location,
+        address,
         phone,
       });
     }
@@ -132,6 +138,14 @@ export default function Register() {
               <PhoneInput value={phone} onChange={setPhone} />
             </div>
           </div>
+          {accountType === "empresa" && (
+            <div className="field">
+              <label>Morada da loja</label>
+              <input value={address} onChange={(e) => setAddress(e.target.value)} required
+                placeholder="Rua, número, código-postal, cidade" />
+              <div className="hint">Aparece nos seus anúncios com link para o Google Maps.</div>
+            </div>
+          )}
           <div className="field">
             <label>Email</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
