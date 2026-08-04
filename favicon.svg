@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 92 268 236" role="img" aria-label="NexStock">
+  <rect fill="#152537" x="150" y="150" width="46" height="150" rx="12"/>
+  <path fill="none" stroke="#4fae2b" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"
+        d="M180 156 L256 286 L330 150"/>
+  <path fill="#4fae2b" d="M346 118 L368 172 L292 130 Z"/>
+</svg>
