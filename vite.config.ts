@@ -2,8 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // Served from https://<user>.github.io/sobra-platform/ on GitHub Pages.
-// Override with VITE_BASE=/ for other hosts (e.g. a custom domain / Vercel).
+// Live on the custom domain nexstock.pt (root), so base is "/".
+// Override with VITE_BASE=/sobra-platform/ for the project-pages URL.
 export default defineConfig({
-  base: process.env.VITE_BASE || "/sobra-platform/",
+  base: process.env.VITE_BASE || "/",
   plugins: [react()],
 });
